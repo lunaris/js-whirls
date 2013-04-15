@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <title>Rafajenkins</title>
+    <script type="text/javascript"
+      src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
+    </script>
+    <script src="raphael-min.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+      (function($) {
+        var arc = function(cx, cy, value, total, radius) {
+          var alphaDegrees = (value / total) * 360,
+              betaRadians = (90 - alphaDegrees) * Math.PI / 180,
+              x = cx + (radius * Math.cos(betaRadians)),
+              y = cy - (radius * Math.sin(betaRadians));
+
+          var path = (total == value) ?
+            [['M', cx, cy - radius],
+              ['A', radius, radius, 0, 1, 1, cx - 0.01, cy - radius]] :
+
+            [['M', cx, cy - radius],
+              ['A', radius, radius, 0, +(alphaDegrees > 180), 1, x, y]];
+
+          return { path: path };
+        };
+
+        $(function() {
+          var r = Raphael('canvas', 200, 200);
+          r.customAttributes.arc = arc;
+
+          var a = r.path().attr({
+            'stroke': '#f00',
+            'stroke-width': 14,
+            'arc': [50, 50, 0, 100, 30]
+          });
+
+          a.animate({
+            'arc': [50, 50, 40, 100, 30]
+          }, 1500, 'bounce');
+        });
+      })(jQuery);
+    </script>
+  </head>
+  <body>
+    <div id="canvas"></div>
+  </body>
+</html>
