@@ -24,19 +24,59 @@
           return { path: path };
         };
 
+        var makeArcs = function(options) {
+          var defaults = {
+            'cx': 0,
+            'cy': 0,
+            'n': 3,
+            'offsetRadius': 50,
+            'arcRadius': 50,
+            'stroke': '#f00',
+            'stroke-width': 14
+          };
+
+          options = $.extend(defaults, options);
+          var r = options['raphael'],
+              n = options['n'];
+
+          var arcs = [];
+          for (var i = 0; i < n; ++i) {
+            var newArc = r.path().attr({
+              'stroke': options['stroke'],
+              'stroke-width': options['stroke-width'],
+              'arc': [options['cx'], options['cy'],
+                0, 360, options['offsetRadius'] + options['arcRadius'] * i]
+            });
+
+            arcs.push(newArc);
+          }
+
+          animateArc(options, arcs, 0, n)();
+        };
+
+        var animateArc = function(options, arcs, i, n) {
+          return function() {
+            if (i < n) {
+              arcs[i].animate({
+                'arc': [options['cx'], options['cy'],
+                  360, 360, options['offsetRadius'] + options['arcRadius'] * i]
+              }, 1500, animateArc(options, arcs, i + 1, n))
+            }
+          };
+        };
+
         $(function() {
-          var r = Raphael('canvas', 200, 200);
+          var r = Raphael('canvas', 600, 600);
           r.customAttributes.arc = arc;
 
-          var a = r.path().attr({
-            'stroke': '#f00',
-            'stroke-width': 14,
-            'arc': [50, 50, 0, 100, 30]
+          makeArcs({
+            'raphael': r,
+            'cx': 200,
+            'cy': 200,
+            'offsetRadius': 20,
+            'arcRadius': 15,
+            'strokeWidth': 10
           });
-
-          a.animate({
-            'arc': [50, 50, 40, 100, 30]
-          }, 1500, 'bounce');
         });
       })(jQuery);
     </script>
